@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo "Building uberjar"
+rm -rf target
+clj -T:build uberjar
+echo "Running benchmark"
+java -jar target/uber-difftest.jar
