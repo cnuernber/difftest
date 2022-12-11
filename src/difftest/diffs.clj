@@ -4,8 +4,9 @@
             [tech.v3.datatype :as dtype]
             [criterium.core :as crit]
             [uncomplicate.neanderthal
-             [core :as n]
-             [native :refer [dv]]
+             [core :as nc]
+             [native :refer [dv] :as nn]
+             [real :as nr]
              [random :refer [rand-normal! rand-uniform! rng-state]]])
   (:import [difftest Diff1D
             ;;Diff1DVecOps
@@ -39,10 +40,10 @@
 
 
 (defn neanderthal-diff [origin]
-  (let [k (unchecked-dec (n/dim origin))
-        l (n/subvector origin 0 k)
-        r (n/subvector origin 1 k)]
-    (n/axpy -1 l r)))
+  (let [k (unchecked-dec (nc/dim origin))
+        l (nc/subvector origin 0 k)
+        r (nc/subvector origin 1 k)]
+    (nc/axpy -1 l r)))
 
 
 (defn dtype-diff
@@ -74,6 +75,17 @@
   (crit/quick-bench (dtype-diff big-x))
   (println "done!!")
   (shutdown-agents))
+
+
+(defn sq-ones-raw[n]
+   (let [init (nn/fv n)
+         x (nr/entry! init 1)]
+       (nc/rk init init)))
+
+(def sq-ones (memoize sq-ones-raw))
+
+(defn sqm [n v]
+  (nc/scal! v (sq-ones n)))
 
 
 (comment
